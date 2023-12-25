@@ -1,0 +1,368 @@
+local RPS = game:GetService("ReplicatedStorage")
+local ss = game:GetService("ServerStorage")
+
+local RewardBGre = RPS:WaitForChild("UIEvents").RewardBGre
+local GiveRewardre = RPS.UIEvents.GiveReward
+
+local PlayersScoreFold = ss:WaitForChild("PlayersScoreFol")
+local PlayersScoreFoldRPS = RPS:WaitForChild("PlayerScoreFoldRPS")
+
+local Connection
+local GetRewardConnection
+
+local UltraRareRewards = {
+	
+	{name = "1B", minRarity = 300, maxRarity = 400 },
+	{name = "1M", minRarity = 265, maxRarity = 299},
+
+}
+
+local RareRewards = {  --- range = 230-264
+	"800K",
+	"+3 Hook",
+	"100K",
+	"+3 Shield",
+	"200K",
+	"+3 Dash",
+	"500K",
+
+}
+
+local UncommonRewards = { ----range 1-189
+	
+	"80K",
+	"+2 Hook",
+	"10K",
+	"+2 Shield",
+	"50K",
+	"+2 Dash"
+}
+
+local CommonRewards = {
+	
+	"+1 Hook",
+	"5K",
+	"+1 Shield",
+	"2K",
+	"+1 Dash",
+}
+
+local function CommonRewardFunction(player)
+		
+	local playerScores = PlayersScoreFold:FindFirstChild(player.Name)
+	local playerScoresRPS = PlayersScoreFoldRPS:FindFirstChild(player.Name)
+
+	local ScoreInt = playerScores:FindFirstChild("Score")
+	local HookInt = playerScores:FindFirstChild("HookInt")
+	local ShiledInt = playerScores:FindFirstChild("ShieldInt")
+	local DashInt = playerScores:FindFirstChild("DashInt")
+	
+	local ScoreInt2 = playerScoresRPS:FindFirstChild("Score")
+	local HookInt2 = playerScoresRPS:FindFirstChild("HookInt")
+	local ShiledInt2 = playerScoresRPS:FindFirstChild("ShieldInt")
+	local DashInt2 = playerScoresRPS:FindFirstChild("DashInt")
+	
+	local GetReward = CommonRewards[math.random(1,5)]
+
+	if GetReward == "+1 Hook" then
+		
+		GetRewardConnection = GiveRewardre.OnServerEvent:Connect(function()
+			HookInt.Value += 1
+			HookInt2.Value += 1
+			GetRewardConnection:Disconnect()
+		end)
+		
+		local RewardDetails = {Name = GetReward, Type = "Common Reward"}
+		return RewardDetails			
+	else
+		if GetReward == "5K" then
+			
+			GetRewardConnection = GiveRewardre.OnServerEvent:Connect(function()
+				ScoreInt.Value += 5000
+				ScoreInt2.Value += 5000
+
+				GetRewardConnection:Disconnect()
+			end)
+			
+			local RewardDetails = {Name = GetReward, Type = "Common Reward"}
+			return RewardDetails				
+		else
+			if GetReward == "+1 Shield" then
+				
+				GetRewardConnection = GiveRewardre.OnServerEvent:Connect(function()
+					ShiledInt.Value += 1
+					ShiledInt2.Value += 1
+
+					GetRewardConnection:Disconnect()
+				end)
+				
+				local RewardDetails = {Name = GetReward, Type = "Common Reward"}
+				return RewardDetails				
+			else
+				if GetReward == "2K" then
+					
+					GetRewardConnection = GiveRewardre.OnServerEvent:Connect(function()
+						ScoreInt.Value += 2000
+						ScoreInt2.Value += 2000
+						
+						GetRewardConnection:Disconnect()
+					end)
+					
+					local RewardDetails = {Name = GetReward, Type = "Common Reward"}
+					return RewardDetails						
+				else
+					if GetReward == "+1 Dash" then
+						
+						GetRewardConnection = GiveRewardre.OnServerEvent:Connect(function()
+							DashInt.Value += 1
+							DashInt2.Value += 1
+							GetRewardConnection:Disconnect()
+						end)
+						
+						local RewardDetails = {Name = GetReward, Type = "Common Reward"}
+						return RewardDetails							
+					end
+				end
+			end
+		end
+	end
+	return
+end
+
+local function SelectReward(player)
+	
+	local playerScores = PlayersScoreFold:FindFirstChild(player.Name)
+	local playerScoresRPS = PlayersScoreFoldRPS:FindFirstChild(player.Name)
+	
+	local ScoreInt = playerScores:FindFirstChild("Score")
+	local HookInt = playerScores:FindFirstChild("HookInt")
+	local ShiledInt = playerScores:FindFirstChild("ShieldInt")
+	local DashInt = playerScores:FindFirstChild("DashInt")
+	
+	local ScoreInt2 = playerScoresRPS:FindFirstChild("Score")
+	local HookInt2 = playerScoresRPS:FindFirstChild("HookInt")
+	local ShiledInt2 = playerScoresRPS:FindFirstChild("ShieldInt")
+	local DashInt2 = playerScoresRPS:FindFirstChild("DashInt")
+	
+	local RewardType = math.random(1,20)
+		
+	if RewardType > 6 then
+		
+		local reward = CommonRewardFunction(player)
+		return reward
+	else
+		if RewardType <= 6 then
+			
+			local TotalSum = 0
+			
+			for i = 1,20 do
+				
+				TotalSum += math.random(1,20)
+			end
+						
+			if TotalSum >= 265 then
+				
+				for _, item in ipairs(UltraRareRewards) do
+					
+					
+					if item.name == "1B" and item.minRarity <= TotalSum and item.maxRarity >= TotalSum then
+						
+						GetRewardConnection = GiveRewardre.OnServerEvent:Connect(function()
+							ScoreInt.Value += 1000000000
+							ScoreInt2.Value += 1000000000
+							GetRewardConnection:Disconnect()
+						end)
+						
+						local RewardDetails = {Name = item.name, Type = "Ultra Rare Reward"}
+						return RewardDetails	
+					else
+						if item.name == "1M" and item.minRarity <= TotalSum and item.maxRarity >= TotalSum then
+							
+							GetRewardConnection = GiveRewardre.OnServerEvent:Connect(function()
+								ScoreInt.Value += 1000000
+								ScoreInt2.Value += 1000000
+								GetRewardConnection:Disconnect()
+							end)							
+							local RewardDetails = {Name = item.name, Type = "Ultra Rare Reward"}
+							return RewardDetails								
+						end
+					end
+				end
+			else
+				if TotalSum >= 230 and TotalSum <= 264 then
+										
+					local GetReward = RareRewards[math.random(1,7)]
+					
+					if GetReward == "800K" then
+						
+						GetRewardConnection = GiveRewardre.OnServerEvent:Connect(function()
+							ScoreInt.Value += 800000
+							ScoreInt2.Value += 800000
+							GetRewardConnection:Disconnect()
+						end)
+						
+						local RewardDetails = {Name = GetReward, Type = "Rare Reward"}
+						return RewardDetails	
+					else
+						if GetReward == "+3 Hook" then
+
+							GetRewardConnection = GiveRewardre.OnServerEvent:Connect(function()
+								HookInt.Value += 3
+								HookInt2.Value += 3
+								GetRewardConnection:Disconnect()
+							end)
+
+							local RewardDetails = {Name = GetReward, Type = "Rare Reward"}
+							return RewardDetails								
+						else
+							if GetReward == "100K" then
+
+								GetRewardConnection = GiveRewardre.OnServerEvent:Connect(function()
+									ScoreInt.Value += 100000
+									ScoreInt2.Value += 100000
+									GetRewardConnection:Disconnect()
+								end)
+
+								local RewardDetails = {Name = GetReward, Type = "Rare Reward"}
+								return RewardDetails									
+							else
+								if GetReward == "+3 Shield" then
+
+									GetRewardConnection = GiveRewardre.OnServerEvent:Connect(function()
+										ShiledInt.Value += 3
+										ShiledInt2.Value += 3
+										GetRewardConnection:Disconnect()
+									end)
+
+									local RewardDetails = {Name = GetReward, Type = "Rare Reward"}
+									return RewardDetails										
+								else
+									if GetReward == "200K" then
+
+
+										GetRewardConnection = GiveRewardre.OnServerEvent:Connect(function()
+											ScoreInt.Value += 200000
+											ScoreInt2.Value += 200000
+											GetRewardConnection:Disconnect()
+										end)
+
+										local RewardDetails = {Name = GetReward, Type = "Rare Reward"}
+										return RewardDetails											
+									else
+										if GetReward == "+3 Dash" then
+
+											GetRewardConnection = GiveRewardre.OnServerEvent:Connect(function()
+												DashInt.Value += 3
+												DashInt2.Value += 3
+												GetRewardConnection:Disconnect()
+											end)
+
+											local RewardDetails = {Name = GetReward, Type = "Rare Reward"}
+											return RewardDetails												
+										else
+											if GetReward == "500K" then
+
+												GetRewardConnection = GiveRewardre.OnServerEvent:Connect(function()
+													ScoreInt.Value += 500000
+													ScoreInt2.Value += 500000
+													GetRewardConnection:Disconnect()
+												end)
+
+												local RewardDetails = {Name = GetReward, Type = "Rare Reward"}
+												return RewardDetails													
+											end
+										end
+									end
+								end
+							end
+						end
+					end
+				else
+					if TotalSum >= 1 and TotalSum <= 189 then
+												
+						local GetReward = math.random(1,6)
+						
+						if GetReward == "80K" then
+
+							GetRewardConnection = GiveRewardre.OnServerEvent:Connect(function()
+								ScoreInt.Value += 80000
+								ScoreInt2.Value += 80000
+								GetRewardConnection:Disconnect()
+							end)
+
+							return GetReward	, "Uncommon Reward"			
+						else
+							if GetReward == "+2 Hook" then
+
+								GetRewardConnection = GiveRewardre.OnServerEvent:Connect(function()
+									HookInt.Value += 2
+									HookInt2.Value += 2
+									GetRewardConnection:Disconnect()
+								end)
+
+								local RewardDetails = {Name = GetReward, Type = "Uncommon Reward"}
+								return RewardDetails									
+							else
+								if GetReward == "10K" then
+
+									GetRewardConnection = GiveRewardre.OnServerEvent:Connect(function()
+										ScoreInt.Value += 10000
+										ScoreInt2.Value += 10000
+										GetRewardConnection:Disconnect()
+									end)
+
+									local RewardDetails = {Name = GetReward, Type = "Uncommon Reward"}
+									return RewardDetails											
+								else
+									if GetReward == "+2 Shield" then
+
+										GetRewardConnection = GiveRewardre.OnServerEvent:Connect(function()
+											ShiledInt.Value += 2
+											ShiledInt2.Value += 2
+											GetRewardConnection:Disconnect()
+										end)
+
+										local RewardDetails = {Name = GetReward, Type = "Uncommon Reward"}
+										return RewardDetails												
+									else
+										if GetReward == "50K" then
+
+											GetRewardConnection = GiveRewardre.OnServerEvent:Connect(function()
+												ScoreInt.Value += 5000
+												ScoreInt2.Value += 5000
+												GetRewardConnection:Disconnect()
+											end)
+
+											local RewardDetails = {Name = GetReward, Type = "Uncommon Reward"}
+											return RewardDetails													
+										else
+											if GetReward == "+2 Dash" then
+
+												GetRewardConnection = GiveRewardre.OnServerEvent:Connect(function()
+													DashInt.Value += 2
+													DashInt2.Value += 2
+													GetRewardConnection:Disconnect()
+												end)
+
+												local RewardDetails = {Name = GetReward, Type = "Uncommon Reward"}
+												return RewardDetails														
+											end
+										end
+									end
+								end
+							end
+						end
+					else
+						if TotalSum >= 190 and TotalSum <= 229 then
+							
+							local RewardDetails = CommonRewardFunction(player)
+							return RewardDetails
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+RewardBGre.OnServerInvoke = SelectReward
